@@ -1,6 +1,6 @@
 import numpy as np
 
-def readFile(filename):
+def readFile(filename, mode = False):
 	f = open(filename,'r')
 	data = []
 	labels = []
@@ -10,7 +10,7 @@ def readFile(filename):
 			continue
 		linedata = eachLine.split(",")
 		# print linedata
-		data.append([float(linedata[0]),float(linedata[1]), float(linedata[2]), float(linedata[3])])
+		data.append([1,float(linedata[0]),float(linedata[1]), float(linedata[2]), float(linedata[3])])
 		labels.append(str(linedata[4]))
 	data = np.array(data)
 	labels = np.array(labels)

@@ -14,8 +14,8 @@ class LogisticRegression:
 		'''
 		n_labels = np.unique(labels)
 
-		for eachIter in range(num_iters):
-			self.gradientDescent(init_theta, data, labels, alpha = 0.01, num_iters = 100)
+		# for eachIter in range(num_iters):
+		# 	self.gradientDescent(init_theta, data, labels, alpha = 0.01, num_iters = 100)
 		# in a loop
 		# compute cost
 		# run gradient descent to change theta values

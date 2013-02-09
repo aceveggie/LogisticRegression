@@ -4,8 +4,22 @@ import scipy
 
 import Loaders
 import LogisticRegression
+import Sigmoid
 
-data,labels = Loaders.readFile("iris-data.txt")
+# load data
+# add 1 column vector to entire data
+# initialize parameters
+# perform gradient descent
+# {
+# 	until number of iterations is satisfied
+# 	calculate cost
+# 	adjust parameters
+# }
+# predict using final parameters
+# calculate accuracy
+
+
+data,labels = Loaders.readFile("iris-data.txt",True)
 # print data
 # print '--'
 # print labels
@@ -22,5 +36,9 @@ gd = np.column_stack((gd, data))
 theta_init = np.zeros((n+1,1))
 
 lr1 = LogisticRegression.LogisticRegression(theta_init, gd, labels)
-
+Sigmoid.sigmoidCalc(0)
+print 'hello'
 #classifiedlabels = lr1.classify()
+
+
+
