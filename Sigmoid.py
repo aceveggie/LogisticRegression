@@ -15,7 +15,7 @@ def sigmoidCalc(data):
 	
 	for eachRow in range(m):
 		for eachCol in range(n):
-			print float(np.exp(-data[eachRow, eachCol]))
+			#print float(np.exp(-data[eachRow, eachCol]))
 			g[eachRow,eachCol] = (1.0) / (1.0 + (math.exp(-data[eachRow, eachCol])))
-			
+	#print 'returning', g		
 	return g

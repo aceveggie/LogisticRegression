@@ -6,27 +6,88 @@ import math
 # import bigfloat
 
 class LogisticRegression:
-	def __init__(self, init_theta, data, labels, num_iters = 100):
-		self.train(init_theta, data, labels, num_iters = 100)
-	def train(self, init_theta, data, labels, num_iters = 100):
+	def __init__(self, data, labels, regularized= False, num_iters = 100):
+		'''
+		constructor just takes data and labels
+		'''
+		unique_classes = np.unique(labels)
+		self.train(data, labels, regularized, unique_classes, num_iters)
+		pass
+
+
+	def train(self, data, Olabels, regularized, unique_classes, num_iters):
 		'''
 		train the classifier. One classifier per unique label
 		'''
-		n_labels = np.unique(labels)
+		#print Olabels
+		m,n = data.shape
 
-		# for eachIter in range(num_iters):
-		# 	self.gradientDescent(init_theta, data, labels, alpha = 0.01, num_iters = 100)
-		# in a loop
-		# compute cost
-		# run gradient descent to change theta values
+		# map labels to program friendly labels
+		labels = np.zeros(Olabels.shape)
+		# map labels to user program understandable format
+		Label_Map = {}
+		label_id = 0
+		for eachClass in unique_classes:
+			# map unique label strings to labels starting from 0 to (num_classes - 1)
+			Label_Map[eachClass] = label_id
+			labels[ np.where(Olabels == eachClass) ] = Label_Map[eachClass]
+			label_id += 1
+		
+		# for each in zip(labels, Olabels):
+		# 	print each
+		# print '--'
 
-		pass
+		# now labels variable contains labels starting from 0 to (num_classes -1)
+		num_classes = len(unique_classes)
+
+		Init_Thetas = [] # to hold initial values of theta
+		
+		Thetas = [] # to hold final values of theta to return
+		
+		Cost_Thetas = [] # cost associated with each theta
+		
+		Cost_History_Theta = [] # contains list of varying cost thetas
+		
+		# if num_classes = 2, then N_Thetas will contain only 1 Theta
+		# if num_classes >2, then N_Thetas will contain num_classes number of Thetas.
+		
+		if(num_classes == 2):
+			theta_init = np.zeros((n,1))
+			Init_Thetas.append(theta_init)
+ 		else:
+ 			for eachInitTheta in range(num_classes):
+ 				theta_init = np.zeros((n,1))
+ 				Init_Thetas.append(theta_init)
+
+ 		for eachIndex in range(num_classes):
+ 			# load data local of the init_theta
+ 			# +ve class is 1 and rest are zeros
+ 			# its a one vs all classifier
+
+ 			local_labels = np.zeros(labels.shape)
+ 			local_labels[np.where(labels == num_classes[eachIndex])] = 1
+ 			
+ 			# assert to make sure that its true
+ 			assert(len(np.unique(local_labels)) == 2)
+ 			assert(len(local_labels) == len(labels))
+ 			
+			init_theta = Init_Thetas[eachIndex]
+
+			new_theta, cost_theta, cost_history = self.gradientDescent(init_theta, data, local_labels, regularized, num_iters)
+			
+			Thetas.append(new_theta)
+			Cost_Thetas.append(cost_theta)
+			Cost_History_Theta.append(cost_history)
+		return Thetas
+	
+
 	def classify(self, init_theta, data):
 		'''
 		classify given data and return a list of associated classified labels
 		'''
 		return classifiedlabels
 
+	
 	def sigmoidCalc(self, data):
 		'''
 		calculate the sigmoid of the given data
@@ -44,61 +105,51 @@ class LogisticRegression:
 				
 		return g
 
-	def gradientDescent(self, init_theta, data, labels, alpha = 0.01, num_iters=100):
+
+	def gradientDescent(self, init_theta, data, labels, regularized, num_iters = 100, alpha = 0.01):
 		'''
-
+		for given number of iterations:
+			perform gradient descent and simultaneously compute cost
+		arrive at final theta
 		'''
-		m = len(labels)
-		nRows, nCols = data.shape
-		cost_history = []
-		temp = np.zeros((1,nCols))
+		
+		#grad = x * (y- sigmoid(theta'*x))';
 
-		# print data.shape
-		# print init_theta.shape
-		for eachIter in range(num_iters):
-			for i in range(nCols):
+		for eachIteration in range(num_iters):
+			# computer cost of the theta	
+			print 'cost at iteration: ', eachIteration, self.computeCost(data, labels, regularized, init_theta)	
+			# adjust parameters using gradient descent
+			# continue until number of iterations is satisfied
+			gradientVal = np.dot (data, (y - self.sigmoidCalc( X, init_theta)))
+			init_theta = init_theta - (alpha/m) * gradientVal
+		return init_theta
 
-				np.dot(data, init_theta)
-				temp[0,i] = init_theta[i,:] - (alpha/m) * (np.sum(((np.dot(data, init_theta))-labels) * data[:,i]))
 
-			for i in range(nCols):
-				init_theta[i,:] = temp[0,i]
-
-			cost, grad = self.computeCost(data, labels, init_theta)
-			print "cost:", cost, 'at iteration',eachIter
-			cost_history.append(cost)
-		return theta, cost
-
-	def computeCost(self, data, labels, init_theta):
+	def computeCost(self, X, y, regularized, init_theta):
 		'''
 		compute cost of the given value of theta and return it
 		'''
-		m = len(labels)
-		grad = np.zeros(init_theta.shape)
+		if(regularized == True):
+			llambda = 1
+		else:
+			llambda = 0
 
-		#J = (-1.0/ m) * ( sum( log(sigmoid(X * theta)) .* y + ( log ( 1- sigmoid(X * theta) ) .* ( 1 - y ) )) );
+		theta = init_theta
 
-		J = (-1.0/m) * (np.sum( (np.log(np.dot(data, init_theta))) * labels + ( np.log( 1-self.sigmoidCalc(np.dot(data, init_theta) ) ) * labels ) ))
+		m, n = X.shape
+		theta1 = init_theta[0]
+		theta2 = init_theta[1:len(init_theta)]
+		# select first column of the data since it was manually added as an extra field while loading the data (Loaders.py).
+		X1 = X[:,0]
+		X2 = X[:,1:n]
 
-		nRows, nCols = data.shape
+		A = np.log( self.sigmoidCalc(np.dot( X, theta ))) * (-y)  
+		b1 = 1-y
+		b2 = np.log(1 - self.sigmoidCalc(np.dot(X, theta)))
+		B = b1 * b2
 
-		d = self.sigmoidCalc( np.dot(data, init_theta)) - labels;
-		R = np.zeros(data.shape)
-		
-		print d.shape
-		print data.shape
-		
-		R = d * data
+		regularized_parameter = np.dot( (llambda/2*m), np.sum( np.power(theta2, 2)))
 
-		cost = J
-		gradient = np.dot((1.0/m), np.sum(R, 0))
+		J =  ( (1/m) * np.sum(A-B))  + regularized_parameter
 
-		return cost, gradient
-
-class GradientDescent(object):
-	"""docstring for Gradient
-	Descent"""
-	def __init__(self, arg):
-		super(GradientDescent, self).__init__()
-		self.arg = arg
-		
+		return cost
