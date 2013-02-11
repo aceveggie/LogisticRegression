@@ -24,18 +24,14 @@ class LogisticRegression:
 
 		# map labels to program friendly labels
 		labels = np.zeros(Olabels.shape)
-		# map labels to user program understandable format
-		Label_Map = {}
-		label_id = 0
-		for eachClass in unique_classes:
-			# map unique label strings to labels starting from 0 to (num_classes - 1)
-			Label_Map[eachClass] = label_id
-			labels[ np.where(Olabels == eachClass) ] = Label_Map[eachClass]
-			label_id += 1
-		
-		# for each in zip(labels, Olabels):
-		# 	print each
-		# print '--'
+		uniq_Olabel_names = np.unique(Olabels)
+		uniq_label_list = range(len(uniq_Olabel_names))
+
+		for each in zip(uniq_Olabel_names, uniq_label_list):
+			o_label_name = each[0]
+			new_label_name = each[1]
+			labels[np.where(Olabels == o_label_name)] = new_label_name
+
 
 		# now labels variable contains labels starting from 0 to (num_classes -1)
 		num_classes = len(unique_classes)
@@ -59,25 +55,32 @@ class LogisticRegression:
  				theta_init = np.zeros((n,1))
  				Init_Thetas.append(theta_init)
 
- 		for eachIndex in range(num_classes):
+ 		# print 'num_classes', num_classes
+ 		# print 'init thetas', Init_Thetas
+
+ 		for eachClass in range(num_classes):
  			# load data local of the init_theta
  			# +ve class is 1 and rest are zeros
  			# its a one vs all classifier
 
  			local_labels = np.zeros(labels.shape)
- 			local_labels[np.where(labels == num_classes[eachIndex])] = 1
+
  			
+ 			local_labels[np.where(labels == eachClass)] = 1
+ 			print local_labels
+
  			# assert to make sure that its true
  			assert(len(np.unique(local_labels)) == 2)
  			assert(len(local_labels) == len(labels))
+
  			
-			init_theta = Init_Thetas[eachIndex]
+			init_theta = Init_Thetas[eachClass]
 
 			new_theta, cost_theta, cost_history = self.gradientDescent(init_theta, data, local_labels, regularized, num_iters)
 			
-			Thetas.append(new_theta)
-			Cost_Thetas.append(cost_theta)
-			Cost_History_Theta.append(cost_history)
+			# Thetas.append(new_theta)
+			# Cost_Thetas.append(cost_theta)
+			# Cost_History_Theta.append(cost_history)
 		return Thetas
 	
 
@@ -100,7 +103,7 @@ class LogisticRegression:
 		
 		for eachRow in range(m):
 			for eachCol in range(n):
-				print float(np.exp(-data[eachRow, eachCol]))
+				#print float(np.exp(-data[eachRow, eachCol]))
 				g[eachRow,eachCol] = (1.0) / (1.0 + (math.exp(-data[eachRow, eachCol])))
 				
 		return g
@@ -112,15 +115,18 @@ class LogisticRegression:
 			perform gradient descent and simultaneously compute cost
 		arrive at final theta
 		'''
-		
+		y = labels
+		X = data
 		#grad = x * (y- sigmoid(theta'*x))';
 
+		print 'X: ', X.shape
+		print 'init_theta: ', init_theta.shape
 		for eachIteration in range(num_iters):
 			# computer cost of the theta	
 			print 'cost at iteration: ', eachIteration, self.computeCost(data, labels, regularized, init_theta)	
 			# adjust parameters using gradient descent
 			# continue until number of iterations is satisfied
-			gradientVal = np.dot (data, (y - self.sigmoidCalc( X, init_theta)))
+			gradientVal = np.dot (data, (y - self.sigmoidCalc( np.dot(X, init_theta) ) ) )
 			init_theta = init_theta - (alpha/m) * gradientVal
 		return init_theta
 
@@ -150,6 +156,7 @@ class LogisticRegression:
 
 		regularized_parameter = np.dot( (llambda/2*m), np.sum( np.power(theta2, 2)))
 
-		J =  ( (1/m) * np.sum(A-B))  + regularized_parameter
+		cost =  ( (1/m) * np.sum(A-B))  + regularized_parameter
+
 
 		return cost
