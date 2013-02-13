@@ -1,6 +1,8 @@
 LogisticRegression
 ==================
 
+unfinished program
+
 <<<<<<< HEAD
 
 Logistic Regression in python.
