@@ -1,5 +1,6 @@
 import numpy as np
 import Loaders
+import LogisticRegression
 
 data,Olabels = Loaders.readFile("iris-data.txt")
 
@@ -22,3 +23,5 @@ num_classes = len(unique_classes)
 
 for each in zip(data, Olabels, labels):
 	print each
+lr = LogisticRegression.LogisticRegression(data, Olabels)
+print lr.sigmoidCalc(data)
