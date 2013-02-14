@@ -1,13 +1,9 @@
 LogisticRegression
 ==================
 
-unfinished program
-
-<<<<<<< HEAD
+This program can be used for multi-class classification problems (one vs rest classifer).
+This is a basic implementation of Logistic Regression
 
 Logistic Regression in python.
 
-To be finished soon.
-=======
-Logistic Regression classifier written in python
->>>>>>> b749dd4bae88a9375b84d17d9cbdec1d1882b48d
+This program doesn't currently work for binary classification problems. I'll fix this soon.
