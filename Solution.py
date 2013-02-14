@@ -22,16 +22,17 @@ data,labels = Loaders.readFile("iris-data.txt",True)
 m,n = data.shape
 # initialize theta values to zero
 # train
-#lr1 = LogisticRegression.LogisticRegression(data, labels)
+
 lr1 = LogisticRegression.LogisticRegression(data, labels, 1.0, 2000)
 
 learntParameters, final_costs = lr1.train(data, labels, np.unique(labels))
-for i in zip(learntParameters, final_costs):
-	print i[0].T,'\t', i[1]
 
-classifedLabel = []
+classifedLabels = []
 for eachData in data:
-	classifedLabel.append(lr1.classify(eachData, learntParameters))
-classifedLabel = np.array(classifedLabel)
+	classifedLabels.append(lr1.classify(eachData, learntParameters))
+classifedLabels = np.array(classifedLabels)
+print 'original label', 'classifedLabels'
+for each in zip(labels, classifedLabels):
+	print each[0],', ', each[1],', ', each[0]==each[1]
 
-print (np.sum(classifedLabel == labels)/len(labels))*100,'%'
+print (np.sum(classifedLabels == labels)/len(labels))*100,'%'
