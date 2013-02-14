@@ -133,17 +133,17 @@ class LogisticRegression:
 
 		m,n = data.shape
 		
-		J = 0;
+		J = 0
 
-		grad = np.zeros(init_theta.shape);
+		grad = np.zeros(init_theta.shape)
 
 		theta2 = init_theta[range(1,init_theta.shape[0]),:]
 		
 		regularized_parameter = np.dot(llambda/(2*m), np.sum( theta2 * theta2))
 		
-		J = (-1.0/ m) * ( np.sum( np.log(self.sigmoidCalc( np.dot(data, init_theta))) * labels + ( np.log ( 1 - self.sigmoidCalc(np.dot(data, init_theta)) ) * ( 1 - labels ) )));
+		J = (-1.0/ m) * ( np.sum( np.log(self.sigmoidCalc( np.dot(data, init_theta))) * labels + ( np.log ( 1 - self.sigmoidCalc(np.dot(data, init_theta)) ) * ( 1 - labels ) )))
 		
-		J = J + regularized_parameter;
+		J = J + regularized_parameter
 
 		return J
 
@@ -156,7 +156,7 @@ class LogisticRegression:
 			llambda = 0
 		
 		for eachIteration in range(num_iters):
-			cost = self.computeCost(data, labels, init_theta);
+			cost = self.computeCost(data, labels, init_theta)
 			
 			#compute gradient
 			
