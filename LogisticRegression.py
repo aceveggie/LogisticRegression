@@ -9,7 +9,7 @@ from scipy.optimize import fmin_bfgs
 class LogisticRegression:
 	def __init__(self, data, labels, alpha, num_iters, regularized= False):
 		'''
-		constructor just takes data and labels
+		constructor just takes number of iterations for gradient descent and value of alpha
 		'''
 		# self.data = data
 		# self.labels = labels
