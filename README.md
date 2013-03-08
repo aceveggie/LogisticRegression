@@ -6,4 +6,4 @@ This is a basic implementation of Logistic Regression
 
 Logistic Regression in python.
 
-This program doesn't currently work for binary classification problems. I'll fix this soon.
+This program has been updated to work for both Multi-Class classification and 2 class classification tasks
