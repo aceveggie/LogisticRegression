@@ -10,11 +10,11 @@ from scipy.optimize import fmin_bfgs
 # import bigfloat
 
 class LogisticRegression:
-	def __init__(self, data, labels, alpha = 1, num_iters = 100, regularized= False, debug = False):
+	def __init__(self, data, labels, alpha = 1, num_iters = 100, regularized= False, debug = False, normalization = 'l2'):
 		'''
 		constructor just takes number of iterations for gradient descent and value of alpha.
 		'''
-
+		self.normalization_mode = normalization
 		self.regularized = regularized
 		self.debug = debug
 		self.num_iters = num_iters
@@ -27,6 +27,7 @@ class LogisticRegression:
 		'''
 		train the classifier. One classifier per unique label
 		'''
+		print 'training....'
 		debug = self.debug
 		regularized = self.regularized
 		#print 'train regularized', regularized
@@ -124,7 +125,7 @@ class LogisticRegression:
 		'''
 		classify given data and return a list of associated classified labels
 		'''
-		# since it is a one vs all classifier, load all classifiers and pick most likely
+		# since it is a one values all classifier, load all classifiers and pick most likely
 		# i.e. which gives max value for sigmoid(X*theta)
 		debug = self.debug
 		assert(len(Thetas)>0)
@@ -181,8 +182,18 @@ class LogisticRegression:
 		grad = np.zeros(init_theta.shape)
 
 		theta2 = init_theta[range(1,init_theta.shape[0]),:]
+		if(self.normalization_mode == "l1"):
+			regularized_parameter = np.dot(llambda/(2*m), np.sum( np.abs(theta2)))
+			# print 'mode: ', self.normalization_mode
+			# print 'lambda: ', llambda
+			# print regularized_parameter
+		else:
+			#(self.mode == "l2")
+			regularized_parameter = np.dot(llambda/(2*m), np.sum( theta2 * theta2))
+			# print 'mode: ', self.normalization_mode
+			# print 'lambda: ', llambda
+			# print regularized_parameter
 		
-		regularized_parameter = np.dot(llambda/(2*m), np.sum( theta2 * theta2))
 		
 		J = (-1.0/ m) * ( np.sum( np.log(self.sigmoidCalc( np.dot(data, init_theta))) * labels + ( np.log ( 1 - self.sigmoidCalc(np.dot(data, init_theta)) ) * ( 1 - labels ) )))
 		

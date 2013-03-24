@@ -32,8 +32,8 @@ import Sigmoid
 
 data,labels = Loaders.readFile("iris-data.txt",True)
 m,n = data.shape
-#lr1 = LogisticRegression.LogisticRegression(data, labels, 1.0, 2000)
-lr1 = LogisticRegression.LogisticRegression(data, labels, 1.0, 2000, regularized=False)
+# lr1 = LogisticRegression.LogisticRegression(data, labels, 1.0, 8000, regularized=True, normalization = 'l1')
+lr1 = LogisticRegression.LogisticRegression(data, labels, 1.0, 8000, regularized=True, normalization = 'l2')
 learntParameters, final_costs = lr1.train(data, labels, np.unique(labels))
 print 'Number of classes', len(np.unique(labels))
 print 'learntParameters(one per class): ',learntParameters
@@ -70,6 +70,3 @@ classifedLabels = np.array(classifedLabels)
 # 	print each[0],', ', each[1],', ', each[0]==each[1]
 
 print (np.sum(classifedLabels == labels)/len(labels))*100,'%'
-
-
-
