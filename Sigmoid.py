@@ -1,3 +1,6 @@
+'''
+to compute sigmoid of an array
+'''
 from __future__ import division
 import numpy as np
 import scipy

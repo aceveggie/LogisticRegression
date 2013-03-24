@@ -1,3 +1,6 @@
+'''
+Logistic Regression classifier class
+'''
 from __future__ import division
 import numpy as np
 import scipy
@@ -7,20 +10,26 @@ from scipy.optimize import fmin_bfgs
 # import bigfloat
 
 class LogisticRegression:
-	def __init__(self, data, labels, alpha, num_iters, regularized= False, debug = False):
+	def __init__(self, data, labels, alpha = 1, num_iters = 100, regularized= False, debug = False):
 		'''
 		constructor just takes number of iterations for gradient descent and value of alpha.
 		'''
+
+		self.regularized = regularized
+		self.debug = debug
 		self.num_iters = num_iters
 		self.alpha = alpha
 		assert(len(np.unique(labels))>=2)
 		pass
 
 
-	def train(self, data, Olabels, unique_classes, regularized=False, debug = False):
+	def train(self, data, Olabels, unique_classes):
 		'''
 		train the classifier. One classifier per unique label
 		'''
+		debug = self.debug
+		regularized = self.regularized
+		#print 'train regularized', regularized
 
 		num_iters = self.num_iters
 		m,n = data.shape
@@ -73,7 +82,7 @@ class LogisticRegression:
  			
  			init_theta = Init_Thetas[0]
 
-			new_theta, final_cost = self.computeGradient(data, local_labels, init_theta, self.alpha, self.num_iters, regularized, debug)
+			new_theta, final_cost = self.computeGradient(data, local_labels, init_theta)
 		
 			Thetas.append(new_theta)
 			Cost_Thetas.append(final_cost)
@@ -103,7 +112,7 @@ class LogisticRegression:
 				init_theta = Init_Thetas[eachClass]
 
 				
-				new_theta, final_cost = self.computeGradient(data, local_labels, init_theta, self.alpha, self.num_iters)
+				new_theta, final_cost = self.computeGradient(data, local_labels, init_theta)
 				#print final_cost
 				Thetas.append(new_theta)
 				Cost_Thetas.append(final_cost)
@@ -117,7 +126,7 @@ class LogisticRegression:
 		'''
 		# since it is a one vs all classifier, load all classifiers and pick most likely
 		# i.e. which gives max value for sigmoid(X*theta)
-		
+		debug = self.debug
 		assert(len(Thetas)>0)
 		
 		if(len(Thetas) > 1):
@@ -146,19 +155,22 @@ class LogisticRegression:
 		'''
 		# if(len(data.flatten()) == 1 ):
 		# 	data = data.reshape((1,1))
-		
+		debug = self.debug
 		data = np.array(data, dtype = np.longdouble)
 		#g = np.zeros(data.shape, dtype = np.float64)
 		g = 1/(1+np.exp(-data))
 		
 		return g
 
-	def computeCost(self,data, labels, init_theta, regularized=False):
+	def computeCost(self,data, labels, init_theta):
 		'''
 		compute cost of the given value of theta and return it
 		'''
+		debug = self.debug
+		regularized = self.regularized
 		if(regularized == True):
-			llambda = 1
+			llambda = 1.0
+			#print 'using llambda', llambda
 		else:
 			llambda = 0
 
@@ -175,12 +187,17 @@ class LogisticRegression:
 		J = (-1.0/ m) * ( np.sum( np.log(self.sigmoidCalc( np.dot(data, init_theta))) * labels + ( np.log ( 1 - self.sigmoidCalc(np.dot(data, init_theta)) ) * ( 1 - labels ) )))
 		
 		J = J + regularized_parameter
-
+		#print 'llambda, regularized parameter: ', llambda, regularized_parameter
 		return J
 
-	def computeGradient(self,data, labels, init_theta, alpha, num_iters = 100, regularized=False, debug = False):
+	def computeGradient(self,data, labels, init_theta):
+		alpha = self.alpha
+		debug = self.debug
+		num_iters = self.num_iters
 		m,n = data.shape
+		regularized = self.regularized
 
+		#print 'inoming regularized', regularized
 		if(regularized == True):
 			llambda = 1
 		else:
@@ -213,6 +230,7 @@ class LogisticRegression:
 				A = (self.sigmoidCalc(np.dot(data,init_theta)) - labels )
 				B = (data[:,i].reshape((data[:,i].shape[0],1)))
 				grad[i] = (1/m)*np.sum(A*B) + ((llambda/m)*init_theta[i])
+
 
 						
 			init_theta = init_theta - (np.dot((alpha/m), grad))

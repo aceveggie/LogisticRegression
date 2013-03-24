@@ -1,3 +1,6 @@
+'''
+Program to read Data from the files
+'''
 import numpy as np
 
 def readFile(filename, mode = False):
